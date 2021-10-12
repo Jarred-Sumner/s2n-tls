@@ -45,7 +45,7 @@ cd s2n-tls
 # Create a build directory, and build s2n-tls with debug symbols and a specific OpenSSL version.
 cmake . -Bbuild -GNinja \
     -DCMAKE_BUILD_TYPE=Debug \
-    -DCMAKE_PREFIX_PATH=$(dirname $(dirname $(brew list openssl@1.1|grep libcrypto.dylib)))
+    -DCMAKE_PREFIX_PATH=$(brew --prefix openssl@1.1)
 cmake --build ./build -j $(nproc)
 CTEST_PARALLEL_LEVEL=$(nproc) ninja -C build test
 ```
