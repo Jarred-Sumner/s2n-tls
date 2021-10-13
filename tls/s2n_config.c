@@ -79,7 +79,9 @@ static int s2n_config_setup_tls13(struct s2n_config *config)
 
 static int s2n_config_setup_fips(struct s2n_config *config)
 {
+    #ifdef OPENSSL_FIPS
     POSIX_GUARD(s2n_config_set_cipher_preferences(config, "default_fips"));
+    #endif
     return S2N_SUCCESS;
 }
 
@@ -103,11 +105,13 @@ static int s2n_config_init(struct s2n_config *config)
 
     config->client_hello_cb_mode = S2N_CLIENT_HELLO_CB_BLOCKING;
 
-    POSIX_GUARD(s2n_config_setup_default(config));
+ 
     if (s2n_use_default_tls13_config()) {
         POSIX_GUARD(s2n_config_setup_tls13(config));
     } else if (s2n_is_in_fips_mode()) {
         POSIX_GUARD(s2n_config_setup_fips(config));
+    } else {
+        POSIX_GUARD(s2n_config_setup_default(config));
     }
 
     POSIX_GUARD_PTR(config->domain_name_to_cert_map = s2n_map_new_with_initial_capacity(1));
@@ -212,9 +216,11 @@ struct s2n_config *s2n_fetch_default_config(void)
     if (s2n_use_default_tls13_config()) {
         return &s2n_default_tls13_config;
     }
+    #ifdef OPENSSL_FIPS
     if (s2n_is_in_fips_mode()) {
         return &s2n_default_fips_config;
     }
+    #endif
     return &s2n_default_config;
 }
 
@@ -230,17 +236,21 @@ int s2n_config_set_unsafe_for_testing(struct s2n_config *config)
 
 int s2n_config_defaults_init(void)
 {
-    /* Set up default */
-    POSIX_GUARD(s2n_config_init(&s2n_default_config));
-    POSIX_GUARD(s2n_config_setup_default(&s2n_default_config));
+    if (!s2n_use_default_tls13_config()) {
+        /* Set up default */
+        POSIX_GUARD(s2n_config_init(&s2n_default_config));
+        POSIX_GUARD(s2n_config_setup_default(&s2n_default_config));
+    } else {
+        /* Set up TLS 1.3 defaults */
+        POSIX_GUARD(s2n_config_init(&s2n_default_tls13_config));
+        POSIX_GUARD(s2n_config_setup_tls13(&s2n_default_tls13_config));
+    }
 
+#ifdef OPENSSL_FIPS
     /* Set up fips defaults */
     POSIX_GUARD(s2n_config_init(&s2n_default_fips_config));
     POSIX_GUARD(s2n_config_setup_fips(&s2n_default_fips_config));
-
-    /* Set up TLS 1.3 defaults */
-    POSIX_GUARD(s2n_config_init(&s2n_default_tls13_config));
-    POSIX_GUARD(s2n_config_setup_tls13(&s2n_default_tls13_config));
+#endif
 
     return S2N_SUCCESS;
 }
