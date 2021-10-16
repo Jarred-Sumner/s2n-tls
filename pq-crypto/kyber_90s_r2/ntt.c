@@ -113,7 +113,7 @@ void PQCLEAN_KYBER51290S_CLEAN_ntt(int16_t poly[256]) {
 *
 * Arguments:   - int16_t poly[256]: pointer to input/output vector of elements of Zq
 **************************************************/
-void PQCLEAN_KYBER51290S_CLEAN_invntt(int16_t poly[256]) {
+void PQCLEAN_KYBER51290S_CLEAN_invntt(int16_t poly[256]) { 
     size_t j, k = 0;
     int16_t t, zeta;
 

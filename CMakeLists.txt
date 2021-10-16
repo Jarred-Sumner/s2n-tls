@@ -20,7 +20,7 @@ option(SEARCH_LIBCRYPTO "Set this if you want to let S2N search libcrypto for yo
 otherwise a crypto target needs to be defined." ON)
 option(UNSAFE_TREAT_WARNINGS_AS_ERRORS "Compiler warnings are treated as errors. Warnings may
 indicate danger points where you should verify with the S2N-TLS developers that the security of
-the library is not compromised. Turn this OFF to ignore warnings." ON)
+the library is not compromised. Turn this OFF to ignore warnings." OFF)
 option(S2N_INTERN_LIBCRYPTO "This ensures that s2n-tls is compiled and deployed with a specific
 version of libcrypto by interning the code and hiding symbols. This also enables s2n-tls to be
 loaded in an application with an otherwise conflicting libcrypto version." OFF)
@@ -233,7 +233,6 @@ try_compile(
         FALL_THROUGH_SUPPORTED
         ${CMAKE_BINARY_DIR}
         SOURCES "${CMAKE_CURRENT_LIST_DIR}/tests/features/fallthrough.c"
-        COMPILE_DEFINITIONS "-Werror"
 )
 
 # Determine if __restrict__ is available
@@ -241,7 +240,6 @@ try_compile(
         __RESTRICT__SUPPORTED
         ${CMAKE_BINARY_DIR}
         SOURCES "${CMAKE_CURRENT_LIST_DIR}/tests/features/__restrict__.c"
-        COMPILE_DEFINITIONS "-Werror"
 )
 
 if(APPLE)

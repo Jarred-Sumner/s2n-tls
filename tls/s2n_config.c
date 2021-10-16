@@ -67,7 +67,7 @@ static struct s2n_config s2n_default_tls13_config = {0};
 
 static int s2n_config_setup_default(struct s2n_config *config)
 {
-    POSIX_GUARD(s2n_config_set_cipher_preferences(config, "default"));
+    POSIX_GUARD(s2n_config_set_cipher_preferences(config, "20190122"));
     return S2N_SUCCESS;
 }
 
